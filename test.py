@@ -3,19 +3,20 @@ import torch
 import torch.nn as nn
 from torchvision import transforms, models
 from PIL import Image
-import os
 import io
 
-num_classes = 4 
+
+num_classes = 4  
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+
 def get_efficientnet_b4(num_classes):
-    model = models.efficientnet_b4(weights=None) 
+    model = models.efficientnet_b4(weights=None)  
     model.classifier[1] = nn.Linear(model.classifier[1].in_features, num_classes)
     return model
 
 def get_resnet101(num_classes):
-    model = models.resnet101(weights=None) 
+    model = models.resnet101(weights=None)  
     model.fc = nn.Linear(model.fc.in_features, num_classes)
     return model
 
@@ -27,24 +28,30 @@ transform = transforms.Compose([
                          std=[0.229, 0.224, 0.225])
 ])
 
-@st.cache_resource 
-def load_model(model_name, num_classes, model_path):
-    if model_name == "EfficientNet-B4":
+@st.cache_resource
+def load_uploaded_model(model_architecture_name, uploaded_model_file):
+    if uploaded_model_file is None:
+        return None
+
+    bytes_data = uploaded_model_file.getvalue()
+    buffer = io.BytesIO(bytes_data)
+
+    if model_architecture_name == "EfficientNet-B4":
         model = get_efficientnet_b4(num_classes)
-    elif model_name == "ResNet-101":
+    elif model_architecture_name == "ResNet-101":
         model = get_resnet101(num_classes)
     else:
-        st.error("Invalid model name selected.")
+        st.error("Invalid model architecture selected for loading.")
         return None
 
     try:
-        model.load_state_dict(torch.load(model_path, map_location=device))
-        model.eval() 
-    except FileNotFoundError:
-        st.error(f"Error: Model file not found at '{model_path}'. Please ensure the model is saved.")
-        return None
+        model.load_state_dict(torch.load(buffer, map_location=device))
+        model.eval()  
+        return model.to(device)
     except Exception as e:
-        st.error(f"Error loading model: {e}")
+        st.error(
+            f"Error loading model from uploaded file. Please ensure it's a valid {model_architecture_name} state_dict. Error: {e}"
+        )
         return None
 
 def predict_image(model, image, class_names):
@@ -61,53 +68,62 @@ def predict_image(model, image, class_names):
 
 st.set_page_config(page_title="Image Classification App", layout="centered")
 
-st.title("Image Classification with PyTorch Models")
-st.write("Upload an image (or multiple images) and get predictions using a pre-trained model.")
+st.title("Image Classification with Custom PyTorch Models")
+st.write("Upload your trained model (`.pth` file) and image(s) for classification.")
 
-model_choice = st.sidebar.selectbox(
-    "Choose a Model",
+model_architecture_choice = st.sidebar.selectbox(
+    "1. Choose Your Trained Model Architecture",
     ("EfficientNet-B4", "ResNet-101")
 )
 
-class_names = ['Nasta Box LIGHT 宅配ボック', 'Nasta_Box_POST_門柱ユニットタイプ', 'Nasta_Post_KS-GP10AN_KS-GP10ANKT', 'Nasta_Post_門柱ユニット KS-GP21A'] 
-
-st.sidebar.write("---")
-st.sidebar.header("Instructions")
-st.sidebar.info(
-    "1. Choose a model from the dropdown.\n"
-    "2. Make sure the corresponding model file (`.pth` or `.pt`) is in the same directory as this script.\n"
-    "3. Upload one or more images.\n"
-    "4. The app will predict the class and confidence for each image."
+uploaded_model_file = st.sidebar.file_uploader(
+    f"2. Upload {model_architecture_choice} Model (.pth)",
+    type=["pth"]
 )
 
-if model_choice == "EfficientNet-B4":
-    model_path = "efficientnet_b4_model.pth" 
-elif model_choice == "ResNet-101":
-    model_path = "resnet101_model.pth" 
+class_names_str = st.sidebar.text_input(
+    "3. Enter Class Names (comma-separated)",
+    "Nasta Box LIGHT 宅配ボック, Nasta_Box_POST_門柱ユニットタイプ, Nasta_Post_KS-GP10AN_KS-GP10ANKT, Nasta_Post_門柱ユニット KS-GP21A"
+)
+class_names = [name.strip() for name in class_names_str.split(",")]
 
-model = load_model(model_choice, num_classes, model_path)
+model = None
+if uploaded_model_file:
+    model = load_uploaded_model(model_architecture_choice, uploaded_model_file)
+    if model:
+        st.sidebar.success(f"{model_architecture_choice} model loaded successfully!")
+    else:
+        st.sidebar.error("Failed to load model. Please check the file and architecture.")
+else:
+    st.sidebar.info("Please upload your model file (.pth) to begin.")
 
 if model:
-    st.success(f"{model_choice} loaded successfully!")
-
-    uploaded_files = st.file_uploader(
-        "Upload Image(s) for Classification",
+    st.subheader("Upload Image(s) For Classification:")
+    uploaded_image_files = st.file_uploader(
+        "Drag and drop images here, or click to select",
         type=["jpg", "jpeg", "png"],
         accept_multiple_files=True
     )
 
-    if uploaded_files:
+    if uploaded_image_files:
         st.subheader("Prediction Results:")
-        for uploaded_file in uploaded_files:
-            image = Image.open(uploaded_file).convert("RGB")
-            st.image(image, caption=f"Uploaded Image: {uploaded_file.name}", use_column_width=True)
+        for uploaded_file in uploaded_image_files:
+            try:
+                image = Image.open(uploaded_file).convert("RGB")
+                st.image(
+                    image, caption=f"Uploaded Image: {uploaded_file.name}", use_container_width =True
+                )
 
-            predicted_class, confidence = predict_image(model, image, class_names)
+                predicted_class, confidence = predict_image(model, image, class_names)
 
-            st.write(f"**Prediction:** {predicted_class}")
-            st.write(f"**Confidence:** {confidence:.2f}")
-            st.markdown("---") 
+                st.write(f"**Prediction:** {predicted_class}")
+                st.write(f"**Confidence:** {confidence:.2f}")
+                st.markdown("---")  
+            except Exception as e:
+                st.error(f"Error processing image {uploaded_file.name}: {e}")
+        else:
+            st.info("Please upload an image to get a prediction.")
     else:
-        st.info("Please upload an image to get a prediction.")
-else:
-    st.warning("Model could not be loaded. Please check the model path and ensure the file exists.")
+        st.warning(
+            "Please upload a model file and configure class names to start classifying images."
+        )
