@@ -1,0 +1,20 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: image-classification-backend
+    ports:
+      - "1234:1234"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: image-classification-frontend
+    ports:
+      - "3003:3003"
+    depends_on:
+      - backend
+    restart: unless-stopped

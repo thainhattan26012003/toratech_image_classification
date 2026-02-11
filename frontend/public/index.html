@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Classification</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <h2>⚙️ Cấu hình</h2>
+      <label>
+        <span>1. Kiến trúc model</span>
+        <select id="modelArchitecture">
+          <option value="EfficientNet-B4">EfficientNet-B4</option>
+          <option value="ResNet-101">ResNet-101</option>
+        </select>
+      </label>
+      <label>
+        <span>2. Upload file model (.pth)</span>
+        <input type="file" id="modelFile" accept=".pth" />
+      </label>
+      <label>
+        <span>3. Tên các class (cách nhau bằng dấu phẩy)</span>
+        <textarea id="classNames" rows="4">Nasta Box LIGHT 宅配ボック, Nasta_Box_POST_門柱ユニットタイプ, Nasta_Post_KS-GP10AN_KS-GP10ANKT, Nasta_Post_門柱ユニット KS-GP21A</textarea>
+      </label>
+      <button type="button" id="btnLoadModel">Load model</button>
+      <div id="modelStatus" class="status"></div>
+    </aside>
+
+    <main class="main">
+      <h1>Image Classification with Custom PyTorch Models</h1>
+      <p>Upload model (.pth) và ảnh để phân loại.</p>
+
+      <section class="upload-section">
+        <h2>Upload ảnh để phân loại</h2>
+        <input type="file" id="imageFiles" accept="image/jpeg,image/jpg,image/png" multiple />
+        <button type="button" id="btnPredict" disabled>Phân loại</button>
+      </section>
+
+      <section id="results" class="results"></section>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
