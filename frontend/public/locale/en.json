@@ -1,0 +1,23 @@
+{
+  "title": "Image Classification",
+  "language": "Language",
+  "sidebarTitle": "Settings",
+  "modelArchitecture": "1. Model architecture",
+  "uploadModelFile": "2. Upload model file (.pth)",
+  "classNamesLabel": "3. Class names (comma-separated)",
+  "btnLoadModel": "Load model",
+  "mainTitle": "Image Classification with Custom PyTorch Models",
+  "mainDesc": "Upload model (.pth) and images to classify.",
+  "uploadImagesTitle": "Upload images to classify",
+  "btnClassify": "Classify",
+  "msgSelectPth": "Please select a .pth file",
+  "msgEnterClasses": "Please enter class names",
+  "msgLoadingModel": "Loading model...",
+  "msgModelError": "Error loading model",
+  "msgModelSuccess": "Model loaded successfully!",
+  "msgBackendError": "Backend connection error: ",
+  "msgSelectImage": "Please select at least one image.",
+  "msgClassifying": "Classifying...",
+  "msgServerError": "Server error",
+  "confidence": "Confidence: "
+}

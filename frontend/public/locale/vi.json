@@ -1,0 +1,23 @@
+{
+  "title": "Phân loại ảnh",
+  "language": "Ngôn ngữ",
+  "sidebarTitle": "Cấu hình",
+  "modelArchitecture": "1. Kiến trúc model",
+  "uploadModelFile": "2. Upload file model (.pth)",
+  "classNamesLabel": "3. Tên các class (cách nhau bằng dấu phẩy)",
+  "btnLoadModel": "Load model",
+  "mainTitle": "Image Classification with Custom PyTorch Models",
+  "mainDesc": "Upload model (.pth) và ảnh để phân loại.",
+  "uploadImagesTitle": "Upload ảnh để phân loại",
+  "btnClassify": "Phân loại",
+  "msgSelectPth": "Vui lòng chọn file .pth",
+  "msgEnterClasses": "Vui lòng nhập tên các class",
+  "msgLoadingModel": "Đang tải model...",
+  "msgModelError": "Lỗi khi load model",
+  "msgModelSuccess": "Đã load model thành công!",
+  "msgBackendError": "Lỗi kết nối backend: ",
+  "msgSelectImage": "Vui lòng chọn ít nhất một ảnh.",
+  "msgClassifying": "Đang phân loại...",
+  "msgServerError": "Lỗi từ server",
+  "confidence": "Độ tin cậy: "
+}

@@ -1,0 +1,23 @@
+{
+  "title": "画像分類",
+  "language": "言語",
+  "sidebarTitle": "設定",
+  "modelArchitecture": "1. モデルアーキテクチャ",
+  "uploadModelFile": "2. モデルファイルをアップロード (.pth)",
+  "classNamesLabel": "3. クラス名（カンマ区切り）",
+  "btnLoadModel": "モデルを読み込む",
+  "mainTitle": "カスタムPyTorchモデルで画像分類",
+  "mainDesc": "モデル(.pth)と画像をアップロードして分類します。",
+  "uploadImagesTitle": "分類する画像をアップロード",
+  "btnClassify": "分類する",
+  "msgSelectPth": ".pthファイルを選択してください",
+  "msgEnterClasses": "クラス名を入力してください",
+  "msgLoadingModel": "モデルを読み込み中...",
+  "msgModelError": "モデルの読み込みに失敗しました",
+  "msgModelSuccess": "モデルを読み込みました！",
+  "msgBackendError": "バックエンド接続エラー：",
+  "msgSelectImage": "画像を1枚以上選択してください。",
+  "msgClassifying": "分類中...",
+  "msgServerError": "サーバーエラー",
+  "confidence": "信頼度："
+}

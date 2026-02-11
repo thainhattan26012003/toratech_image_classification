@@ -14,23 +14,23 @@ const resultsEl = document.getElementById('results');
 
 let modelLoaded = false;
 
-function setModelStatus(message, type = 'info') {
+function setModelStatus(message, type) {
   modelStatus.textContent = message;
-  modelStatus.className = 'status ' + type;
+  modelStatus.className = 'status ' + (type || 'info');
 }
 
 async function loadModel() {
   const file = modelFile.files[0];
   if (!file) {
-    setModelStatus('Vui lòng chọn file .pth', 'error');
+    setModelStatus(t('msgSelectPth'), 'error');
     return;
   }
   const names = classNames.value.trim();
   if (!names) {
-    setModelStatus('Vui lòng nhập tên các class', 'error');
+    setModelStatus(t('msgEnterClasses'), 'error');
     return;
   }
-  setModelStatus('Đang tải model...', 'info');
+  setModelStatus(t('msgLoadingModel'), 'info');
   btnLoadModel.disabled = true;
   try {
     const form = new FormData();
@@ -41,16 +41,16 @@ async function loadModel() {
       method: 'POST',
       body: form,
     });
-    const data = await res.json().catch(() => ({}));
+    const data = await res.json().catch(function () { return {}; });
     if (!res.ok) {
-      setModelStatus(data.detail || 'Lỗi khi load model', 'error');
+      setModelStatus(data.detail || t('msgModelError'), 'error');
       return;
     }
-    setModelStatus(data.message || 'Đã load model thành công!', 'success');
+    setModelStatus(data.message || t('msgModelSuccess'), 'success');
     modelLoaded = true;
     btnPredict.disabled = false;
   } catch (err) {
-    setModelStatus('Lỗi kết nối backend: ' + err.message, 'error');
+    setModelStatus(t('msgBackendError') + err.message, 'error');
   } finally {
     btnLoadModel.disabled = false;
   }
@@ -59,10 +59,10 @@ async function loadModel() {
 async function predict() {
   const files = imageFiles.files;
   if (!files || files.length === 0) {
-    resultsEl.innerHTML = '<p class="loading">Vui lòng chọn ít nhất một ảnh.</p>';
+    resultsEl.innerHTML = '<p class="loading">' + escapeHtml(t('msgSelectImage')) + '</p>';
     return;
   }
-  resultsEl.innerHTML = '<p class="loading">Đang phân loại...</p>';
+  resultsEl.innerHTML = '<p class="loading">' + escapeHtml(t('msgClassifying')) + '</p>';
   const form = new FormData();
   for (let i = 0; i < files.length; i++) {
     form.append('files', files[i]);
@@ -72,35 +72,35 @@ async function predict() {
       method: 'POST',
       body: form,
     });
-    const data = await res.json().catch(() => ({}));
+    const data = await res.json().catch(function () { return {}; });
     if (!res.ok) {
-      resultsEl.innerHTML = '<p class="error">' + (data.detail || 'Lỗi từ server') + '</p>';
+      resultsEl.innerHTML = '<p class="error">' + escapeHtml(data.detail || t('msgServerError')) + '</p>';
       return;
     }
     renderResults(files, data.results || []);
   } catch (err) {
-    resultsEl.innerHTML = '<p class="error">Lỗi kết nối backend: ' + err.message + '</p>';
+    resultsEl.innerHTML = '<p class="error">' + escapeHtml(t('msgBackendError') + err.message) + '</p>';
   }
 }
 
 function renderResults(fileList, results) {
   const list = Array.from(fileList);
   resultsEl.innerHTML = '';
-  list.forEach((file, i) => {
+  list.forEach(function (file, i) {
     const result = results[i] || {};
     const card = document.createElement('div');
     card.className = 'result-card';
     const imgUrl = URL.createObjectURL(file);
-    let content = '<img src="' + imgUrl + '" alt=""/>';
+    var content = '<img src="' + imgUrl + '" alt=""/>';
     content += '<div class="filename">' + escapeHtml(file.name) + '</div>';
     if (result.error) {
       content += '<div class="error">' + escapeHtml(result.error) + '</div>';
     } else {
       content += '<div class="prediction">' + escapeHtml(result.prediction || '') + '</div>';
-      content += '<div class="confidence">Confidence: ' + (result.confidence != null ? (result.confidence * 100).toFixed(2) + '%' : '') + '</div>';
+      content += '<div class="confidence">' + t('confidence') + (result.confidence != null ? (result.confidence * 100).toFixed(2) + '%' : '') + '</div>';
     }
     card.innerHTML = content;
-    card.querySelector('img').onload = () => URL.revokeObjectURL(imgUrl);
+    card.querySelector('img').onload = function () { URL.revokeObjectURL(imgUrl); };
     resultsEl.appendChild(card);
   });
 }
@@ -111,5 +111,21 @@ function escapeHtml(s) {
   return div.innerHTML;
 }
 
+function refreshUIText() {
+  applyTranslations();
+}
+
+onLanguageChange = refreshUIText;
+
 btnLoadModel.addEventListener('click', loadModel);
 btnPredict.addEventListener('click', predict);
+
+document.addEventListener('DOMContentLoaded', function () {
+  var langSelect = document.getElementById('langSelect');
+  if (langSelect) {
+    langSelect.value = getLanguage();
+    langSelect.addEventListener('change', function () {
+      setLanguage(langSelect.value);
+    });
+  }
+});

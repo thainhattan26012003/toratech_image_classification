@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,39 +9,48 @@
 <body>
   <div class="app">
     <aside class="sidebar">
-      <h2>⚙️ Cấu hình</h2>
+      <div class="lang-switcher">
+        <span class="lang-label" data-i18n="language">Language</span>
+        <select id="langSelect" class="lang-select" aria-label="Language">
+          <option value="en">English</option>
+          <option value="ja">日本語</option>
+          <option value="vi">Tiếng Việt</option>
+        </select>
+      </div>
+      <h2 data-i18n="sidebarTitle">Settings</h2>
       <label>
-        <span>1. Kiến trúc model</span>
+        <span data-i18n="modelArchitecture">1. Model architecture</span>
         <select id="modelArchitecture">
           <option value="EfficientNet-B4">EfficientNet-B4</option>
           <option value="ResNet-101">ResNet-101</option>
         </select>
       </label>
       <label>
-        <span>2. Upload file model (.pth)</span>
+        <span data-i18n="uploadModelFile">2. Upload model file (.pth)</span>
         <input type="file" id="modelFile" accept=".pth" />
       </label>
       <label>
-        <span>3. Tên các class (cách nhau bằng dấu phẩy)</span>
+        <span data-i18n="classNamesLabel">3. Class names (comma-separated)</span>
         <textarea id="classNames" rows="4">Nasta Box LIGHT 宅配ボック, Nasta_Box_POST_門柱ユニットタイプ, Nasta_Post_KS-GP10AN_KS-GP10ANKT, Nasta_Post_門柱ユニット KS-GP21A</textarea>
       </label>
-      <button type="button" id="btnLoadModel">Load model</button>
+      <button type="button" id="btnLoadModel" data-i18n="btnLoadModel">Load model</button>
       <div id="modelStatus" class="status"></div>
     </aside>
 
     <main class="main">
-      <h1>Image Classification with Custom PyTorch Models</h1>
-      <p>Upload model (.pth) và ảnh để phân loại.</p>
+      <h1 data-i18n="mainTitle">Image Classification with Custom PyTorch Models</h1>
+      <p data-i18n="mainDesc">Upload model (.pth) and images to classify.</p>
 
       <section class="upload-section">
-        <h2>Upload ảnh để phân loại</h2>
+        <h2 data-i18n="uploadImagesTitle">Upload images to classify</h2>
         <input type="file" id="imageFiles" accept="image/jpeg,image/jpg,image/png" multiple />
-        <button type="button" id="btnPredict" disabled>Phân loại</button>
+        <button type="button" id="btnPredict" disabled data-i18n="btnClassify">Classify</button>
       </section>
 
       <section id="results" class="results"></section>
     </main>
   </div>
+  <script src="i18n.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

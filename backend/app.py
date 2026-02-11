@@ -83,6 +83,13 @@ app.add_middleware(
 )
 
 
+@app.get("/")
+@app.head("/")
+def root():
+    """Root endpoint for load balancers / health probes that hit /."""
+    return {"service": "image-classification-api", "status": "ok"}
+
+
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
