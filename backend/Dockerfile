@@ -1,5 +1,4 @@
-
-FROM python:3.10-slim AS builder
+FROM python:3.10-slim
 
 WORKDIR /app
 
@@ -8,7 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir fastapi "uvicorn[standard]" python-multipart Pillow
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app.py .
 
